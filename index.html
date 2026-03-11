@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Khảo sát nhanh</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="bg-gray-50 py-10 px-4">
+    <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
+        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">PHIẾU THÔNG TIN</h2>
+        
+        <form id="surveyForm" class="space-y-5">
+            <div>
+                <label class="block font-semibold">Họ và Tên:</label>
+                <input type="text" name="hoTen" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <div>
+                <label class="block font-semibold">Năm sinh:</label>
+                <input type="number" name="namSinh" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+            <hr>
+            <div>
+                <label class="block font-semibold italic text-blue-700">Câu 1: Mục tiêu của bạn năm nay là gì?</label>
+                <textarea name="cau1" required class="w-full border p-2 rounded h-24"></textarea>
+            </div>
+            <div>
+                <label class="block font-semibold italic text-blue-700">Câu 2: Khó khăn lớn nhất bạn đang gặp phải?</label>
+                <textarea name="cau2" required class="w-full border p-2 rounded h-24"></textarea>
+            </div>
+            <div>
+                <label class="block font-semibold italic text-blue-700">Câu 3: Đề xuất cải thiện cho chúng tôi?</label>
+                <textarea name="cau3" required class="w-full border p-2 rounded h-24"></textarea>
+            </div>
+
+            <button type="submit" id="submitBtn" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700">
+                GỬI THÔNG TIN
+            </button>
+        </form>
+    </div>
+
+    <script>
+        const scriptURL = 'https://script.google.com/macros/s/AKfycbyQ1HmcxPut7TxfM5yH66A_AsimS5qsMez9eUhf7v5huoUuL1XGOtN95jXXJycj2vQ/exec';
+        const form = document.getElementById('surveyForm');
+        const btn = document.getElementById('submitBtn');
+
+        form.addEventListener('submit', e => {
+            e.preventDefault();
+            btn.disabled = true;
+            btn.innerText = "Đang gửi...";
+
+            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+                .then(response => {
+                    alert("Cảm ơn! Dữ liệu đã được lưu vào Google Sheet.");
+                    form.reset();
+                    btn.disabled = false;
+                    btn.innerText = "GỬI THÔNG TIN";
+                })
+                .catch(error => {
+                    console.error('Lỗi!', error.message);
+                    btn.disabled = false;
+                    btn.innerText = "GỬI LẠI";
+                });
+        });
+    </script>
+</body>
+</html>
