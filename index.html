@@ -1,67 +1,128 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Khảo sát nhanh</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .modal-active { display: flex !important; }
+        input:invalid { border-color: #ef4444; }
+        input:valid { border-color: #e5e7eb; }
+    </style>
 </head>
+
 <body class="bg-gray-50 py-10 px-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-800 mb-6 text-center">PHIẾU THÔNG TIN</h2>
-        
+        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">PHIẾU THÔNG TIN</h2>
+        <p class="text-center text-gray-500 mb-6 text-sm italic">* Vui lòng nhập đúng định dạng để gửi bài</p>
+
         <form id="surveyForm" class="space-y-5">
             <div>
-                <label class="block font-semibold">Họ và Tên:</label>
-                <input type="text" name="hoTen" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
-            </div>
-            <div>
-                <label class="block font-semibold">Năm sinh:</label>
-                <input type="number" name="namSinh" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
-            </div>
-            <hr>
-            <div>
-                <label class="block font-semibold italic text-blue-700">Câu 1: Mục tiêu của bạn năm nay là gì?</label>
-                <textarea name="cau1" required class="w-full border p-2 rounded h-24"></textarea>
-            </div>
-            <div>
-                <label class="block font-semibold italic text-blue-700">Câu 2: Khó khăn lớn nhất bạn đang gặp phải?</label>
-                <textarea name="cau2" required class="w-full border p-2 rounded h-24"></textarea>
-            </div>
-            <div>
-                <label class="block font-semibold italic text-blue-700">Câu 3: Đề xuất cải thiện cho chúng tôi?</label>
-                <textarea name="cau3" required class="w-full border p-2 rounded h-24"></textarea>
+                <label class="block font-semibold italic text-blue-700">Họ và tên:</label>
+                <input type="text" name="hoTen" id="hoTen" required minlength="2"
+                    placeholder="Ví dụ: Nguyễn Văn A"
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
             </div>
 
-            <button type="submit" id="submitBtn" class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700">
-                GỬI THÔNG TIN
+            <hr>
+
+            <div>
+                <label class="block font-semibold italic text-blue-700">Số điện thoại:</label>
+                <input type="tel" name="cau1" id="sdt" required 
+                    placeholder="Ví dụ: 0912345678"
+                    inputmode="numeric"
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
+                <p id="phoneError" class="text-red-500 text-xs mt-1 hidden">Số điện thoại phải là 10 số và bắt đầu bằng số 0</p>
+            </div>
+
+            <div>
+                <label class="block font-semibold italic text-blue-700">Chuyên ngành:</label>
+                <input type="text" name="cau2" required
+                    placeholder="Ví dụ: Kế toán, CNTT..."
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+
+            <div>
+                <label class="block font-semibold italic text-blue-700">Tháng dự kiến tốt nghiệp:</label>
+                <input type="text" name="cau3" required
+                    placeholder="Ví dụ: Tháng 5/2026"
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
+            </div>
+
+            <button type="submit" id="submitBtn"
+                class="w-full bg-green-600 text-white font-bold py-3 rounded-lg hover:bg-green-700 transition active:scale-95 disabled:bg-gray-400">
+                Gửi thông tin
             </button>
         </form>
+    </div>
+
+    <div id="successModal" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50 p-4">
+        <div class="bg-white rounded-xl p-8 max-w-sm w-full text-center shadow-2xl">
+            <div class="w-16 h-16 bg-green-100 text-green-600 rounded-full flex items-center justify-center mx-auto mb-4">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7" />
+                </svg>
+            </div>
+            <h3 class="text-xl font-bold text-gray-900 mb-2">Thành công!</h3>
+            <p class="text-gray-600 mb-6">Dữ liệu của bạn đã được cập nhật vào hệ thống.</p>
+            <button onclick="closeModal()" class="w-full bg-gray-800 text-white font-bold py-2 rounded-lg hover:bg-black">Đóng</button>
+        </div>
     </div>
 
     <script>
         const scriptURL = 'https://script.google.com/macros/s/AKfycbyQ1HmcxPut7TxfM5yH66A_AsimS5qsMez9eUhf7v5huoUuL1XGOtN95jXXJycj2vQ/exec';
         const form = document.getElementById('surveyForm');
         const btn = document.getElementById('submitBtn');
+        const modal = document.getElementById('successModal');
+        const inputHoTen = document.getElementById('hoTen');
+        const inputSdt = document.getElementById('sdt');
+
+        inputHoTen.addEventListener('input', (e) => {
+            let words = e.target.value.split(' ');
+            let capitalizedWords = words.map(word => {
+                return word.charAt(0).toUpperCase() + word.slice(1).toLowerCase();
+            });
+            e.target.value = capitalizedWords.join(' ');
+        });
 
         form.addEventListener('submit', e => {
             e.preventDefault();
+            
+            const vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/;
+            if (!vnf_regex.test(inputSdt.value)) {
+                document.getElementById('phoneError').classList.remove('hidden');
+                inputSdt.focus();
+                return;
+            } else {
+                document.getElementById('phoneError').classList.add('hidden');
+            }
+
             btn.disabled = true;
             btn.innerText = "Đang gửi...";
 
-            fetch(scriptURL, { method: 'POST', body: new FormData(form)})
+            const formData = new FormData(form);
+            const sdtGoc = formData.get('cau1');
+            formData.set('cau1', "'" + sdtGoc);
+
+            fetch(scriptURL, { method: 'POST', body: formData })
                 .then(response => {
-                    alert("Cảm ơn! Dữ liệu đã được lưu vào Google Sheet.");
+                    modal.classList.add('modal-active');
                     form.reset();
                     btn.disabled = false;
-                    btn.innerText = "GỬI THÔNG TIN";
+                    btn.innerText = "Gửi thông tin";
                 })
                 .catch(error => {
-                    console.error('Lỗi!', error.message);
+                    alert("Lỗi kết nối! Vui lòng thử lại.");
                     btn.disabled = false;
-                    btn.innerText = "GỬI LẠI";
+                    btn.innerText = "Gửi lại";
                 });
         });
+
+        function closeModal() {
+            modal.classList.remove('modal-active');
+        }
     </script>
 </body>
 </html>
