@@ -4,13 +4,11 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Khảo sát nhanh</title>
+    <title>Thu thập thông tin sinh viên</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         .modal-active { display: flex !important; }
-        input:invalid { border-color: #ef4444; }
-        input:valid { border-color: #e5e7eb; }
-        /* Style cho dấu sao đỏ */
+        input:invalid, select:invalid { border-color: #ef4444; }
         .required-dot::after {
             content: " *";
             color: #ef4444;
@@ -21,41 +19,62 @@
 
 <body class="bg-gray-50 py-10 px-4">
     <div class="max-w-xl mx-auto bg-white p-8 rounded-xl shadow-lg">
-        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center">THU THẬP THÔNG TIN SINH VIÊN</h2>
+        <h2 class="text-2xl font-bold text-gray-800 mb-2 text-center uppercase">Thu thập thông tin sinh viên</h2>
         <p class="text-center text-gray-500 mb-6 text-sm italic">* Vui lòng nhập đúng định dạng để gửi bài</p>
 
         <form id="surveyForm" class="space-y-5">
             <div>
                 <label class="block font-semibold italic text-blue-700 required-dot">Họ và tên:</label>
-                <input type="text" name="hoTen" id="hoTen" required minlength="2"
-                    placeholder="Ví dụ: Nguyễn Văn A"
+                <input type="text" name="hoTen" id="hoTen" required minlength="2" placeholder="Ví dụ: Nguyễn Văn A"
                     class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
             </div>
 
-            <hr>
+            <div>
+                <label class="block font-semibold italic text-blue-700 required-dot">Ngày tháng năm sinh:</label>
+                <input type="date" name="ngaySinh" required
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
+            </div>
 
             <div>
                 <label class="block font-semibold italic text-blue-700 required-dot">Số điện thoại:</label>
-                <input type="tel" name="cau1" id="sdt" required 
-                    placeholder="Ví dụ: 0912345678"
-                    inputmode="numeric"
+                <input type="tel" name="cau1" id="sdt" required placeholder="Ví dụ: 0912345678" inputmode="numeric"
                     class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
                 <p id="phoneError" class="text-red-500 text-xs mt-1 hidden">Số điện thoại phải là 10 số và bắt đầu bằng số 0</p>
             </div>
 
             <div>
+                <label class="block font-semibold italic text-blue-700 required-dot">Địa chỉ thường trú:</label>
+                <input type="text" name="diaChi" required placeholder="Xã/Huyện/Tỉnh"
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
+            </div>
+
+            <div>
+                <label class="block font-semibold italic text-blue-700 required-dot">Bạn là sinh viên trường nào?</label>
+                <input type="text" name="truongHoc" required placeholder="Tên trường đại học/cao đẳng"
+                    class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
+            </div>
+
+            <div>
                 <label class="block font-semibold italic text-blue-700 required-dot">Chuyên ngành:</label>
-                <input type="text" name="cau2" required
-                    placeholder="Ví dụ: Kế toán, CNTT..."
+                <input type="text" name="cau2" required placeholder="Ví dụ: Kế toán, CNTT..."
                     class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none">
             </div>
 
             <div>
                 <label class="block font-semibold italic text-blue-700 required-dot">Tháng dự kiến tốt nghiệp (Tháng/Năm):</label>
-                <input type="text" name="cau3" id="thangDuKien" required
-                    placeholder="Ví dụ: 5/2026"
+                <input type="text" name="cau3" id="thangDuKien" required placeholder="Ví dụ: 5/2026"
                     class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none transition-all">
                 <p id="dateError" class="text-red-500 text-xs mt-1 hidden">Định dạng Tháng/Năm không hợp lệ hoặc ở quá khứ</p>
+            </div>
+
+            <div>
+                <label class="block font-semibold italic text-blue-700 required-dot">Sau khi tốt nghiệp, bạn muốn làm việc tại cơ sở nào?</label>
+                <select name="coSoLamViec" required class="w-full border p-2 rounded focus:ring-2 focus:ring-green-500 outline-none bg-white">
+                    <option value="" disabled selected>-- Chọn cơ sở --</option>
+                    <option value="KCN vsip Lương Điền - Cẩm Giàng - Hải Dương">KCN VSIP Lương Điền - Cẩm Giàng - Hải Dương</option>
+                    <option value="Hưng Yên">Hưng Yên</option>
+                    <option value="Nghệ An">Nghệ An</option>
+                </select>
             </div>
 
             <button type="submit" id="submitBtn"
@@ -87,6 +106,7 @@
         const inputSdt = document.getElementById('sdt');
         const inputThang = document.getElementById('thangDuKien');
 
+        // Tự động viết hoa chữ cái đầu cho Họ tên
         inputHoTen.addEventListener('input', (e) => {
             let words = e.target.value.split(' ');
             let capitalizedWords = words.map(word => {
@@ -96,21 +116,18 @@
             e.target.value = capitalizedWords.join(' ');
         });
 
+        // Hàm kiểm tra định dạng Tháng/Năm
         function validateDate(value) {
             const regex = /^([1-9]|1[0-2])\/[0-9]{4}$/;
             if (!regex.test(value)) return false;
-
             const parts = value.split('/');
             const inputMonth = parseInt(parts[0], 10);
             const inputYear = parseInt(parts[1], 10);
-
             const now = new Date();
             const currentMonth = now.getMonth() + 1;
             const currentYear = now.getFullYear();
-
             if (inputYear < currentYear) return false;
             if (inputYear === currentYear && inputMonth < currentMonth) return false;
-
             return true;
         }
 
@@ -118,6 +135,7 @@
             e.preventDefault();
             let isValid = true;
 
+            // Kiểm tra SĐT
             const vnf_regex = /((09|03|07|08|05)+([0-9]{8})\b)/;
             if (!vnf_regex.test(inputSdt.value)) {
                 document.getElementById('phoneError').classList.remove('hidden');
@@ -126,6 +144,7 @@
                 document.getElementById('phoneError').classList.add('hidden');
             }
 
+            // Kiểm tra Tháng tốt nghiệp
             if (!validateDate(inputThang.value)) {
                 document.getElementById('dateError').classList.remove('hidden');
                 isValid = false;
@@ -140,7 +159,7 @@
 
             const formData = new FormData(form);
             const sdtGoc = formData.get('cau1');
-            formData.set('cau1', "'" + sdtGoc);
+            formData.set('cau1', "'" + sdtGoc); // Thêm dấu nháy để giữ số 0 trên Sheet
 
             fetch(scriptURL, { method: 'POST', body: formData })
                 .then(response => {
